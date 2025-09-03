@@ -1,0 +1,1656 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Robot Fertilizador Aguaymanto</title>
+    <!-- Model Viewer -->
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f3f4f6;
+            color: #1f2937;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+        
+        .header {
+            background: white;
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+        
+        .header p {
+            color: #6b7280;
+            font-size: 1rem;
+        }
+        
+        .status-controls {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 9999px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .status-connected {
+            background: #dcfce7;
+            color: #166534;
+        }
+        
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #22c55e;
+        }
+        
+        .btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+        }
+        
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #2563eb;
+        }
+        
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+        
+        .btn-success {
+            background: #22c55e;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #16a34a;
+        }
+        
+        .btn-warning {
+            background: #f59e0b;
+            color: white;
+        }
+        
+        .btn-warning:hover {
+            background: #d97706;
+        }
+        
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+        
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 24px;
+        }
+        
+        .robot-section {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1f2937;
+        }
+        
+        .robot-viewer {
+            width: 100%;
+            height: 300px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        /* Model Viewer Styles */
+        model-viewer {
+            width: 100%;
+            height: 100%;
+            background-color: #f8fafc;
+        }
+        
+        .model-controls {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 8px;
+            z-index: 10;
+        }
+        
+        .model-btn {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            padding: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            color: #374151;
+            transition: all 0.2s;
+        }
+        
+        .model-btn:hover {
+            background: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .loading-indicator {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            z-index: 20;
+            display: none;
+        }
+        
+        .robot-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 16px;
+            font-size: 14px;
+        }
+        
+        .robot-info-item {
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .robot-info-label {
+            color: #6b7280;
+        }
+        
+        .robot-info-value {
+            font-weight: 700;
+        }
+        
+        .tank-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        
+        .tank-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .tank-visual {
+            width: 32px;
+            height: 64px;
+            border: 2px solid #d1d5db;
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .tank-fill {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            transition: height 0.5s ease;
+        }
+        
+        .tank-n { background: #22c55e; }
+        .tank-p { background: #ef4444; }
+        .tank-k { background: #f59e0b; }
+        .tank-water { background: #3b82f6; }
+        
+        .tank-info {
+            flex: 1;
+        }
+        
+        .tank-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #374151;
+        }
+        
+        .tank-level {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1f2937;
+        }
+        
+        .sensors-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+        }
+        
+        .sensor-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .sensor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .sensor-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            color: #374151;
+            font-size: 14px;
+        }
+        
+        .sensor-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1f2937;
+        }
+        
+        .sensor-progress {
+            width: 100%;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .sensor-progress-bar {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+        
+        .progress-green { background: #22c55e; }
+        .progress-red { background: #ef4444; }
+        .progress-yellow { background: #f59e0b; }
+        .progress-blue { background: #3b82f6; }
+        .progress-purple { background: #8b5cf6; }
+        .progress-orange { background: #f97316; }
+        .progress-indigo { background: #6366f1; }
+        
+        .status-panel {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-top: 16px;
+        }
+        
+        .status-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+        
+        .status-section h3 {
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 12px;
+            font-size: 16px;
+        }
+        
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .status-label {
+            color: #6b7280;
+        }
+        
+        .status-value {
+            font-weight: 500;
+            color: #22c55e;
+        }
+        
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            width: 90vw;
+            height: 85vh;
+            max-width: 1200px;
+            max-height: 800px;
+            position: relative;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 24px;
+            border-bottom: 1px solid #e5e7eb;
+            background: #f9fafb;
+        }
+        
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1f2937;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #6b7280;
+            padding: 8px;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        
+        .modal-close:hover {
+            background: #f3f4f6;
+            color: #1f2937;
+        }
+        
+        .modal-viewer {
+            width: 100%;
+            height: calc(100% - 80px);
+            position: relative;
+        }
+        
+        .modal-controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 12px;
+            z-index: 10;
+        }
+        
+        .modal-btn {
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 12px 16px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: #374151;
+            transition: all 0.2s;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .modal-btn:hover {
+            background: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transform: translateY(-1px);
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        .alert {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            min-width: 300px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            animation: slideIn 0.3s ease;
+        }
+        
+        .alert-info {
+            background: #dbeafe;
+            color: #1e40af;
+            border-left: 4px solid #3b82f6;
+        }
+        
+        .alert-success {
+            background: #dcfce7;
+            color: #166534;
+            border-left: 4px solid #22c55e;
+        }
+        
+        .alert-warning {
+            background: #fef3c7;
+            color: #92400e;
+            border-left: 4px solid #f59e0b;
+        }
+        
+        .alert-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+        }
+        
+        .alert-message {
+            font-weight: 500;
+        }
+        
+        .alert-close {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: inherit;
+            padding: 0 0 0 12px;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        .weather-info {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 16px;
+            border-radius: 12px;
+            margin-top: 16px;
+        }
+        
+        .weather-info h3 {
+            margin: 0 0 8px 0;
+            font-size: 16px;
+        }
+        
+        .recommendation-panel {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 16px;
+            border-radius: 12px;
+            margin-top: 16px;
+        }
+        
+        .recommendation-panel h3 {
+            margin: 0 0 8px 0;
+            font-size: 16px;
+        }
+        
+        .controls {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-top: 24px;
+        }
+        
+        .controls h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 16px;
+        }
+        
+        .controls-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        
+        .mission-control {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-top: 24px;
+        }
+        
+        .mission-control h2 {
+            margin-bottom: 16px;
+            color: white;
+        }
+        
+        .mission-status {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+        }
+        
+        .mission-stat {
+            text-align: center;
+        }
+        
+        .mission-stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #22c55e;
+        }
+        
+        .mission-stat-label {
+            font-size: 14px;
+            color: #94a3b8;
+            margin-top: 4px;
+        }
+        
+        .icon {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+        
+        .icon-sm {
+            width: 16px;
+            height: 16px;
+        }
+        
+        @keyframes loading {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        @media (max-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .status-controls {
+                width: 100%;
+                justify-content: flex-start;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 16px;
+            }
+            
+            .sensors-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .status-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tank-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div>
+                <h1>Robot Fertilizador Aguaymanto</h1>
+                <p>Sistema Autónomo de Fertilización Fenológica</p>
+            </div>
+            <div class="status-controls">
+                <div class="status-badge status-connected">
+                    <div class="status-dot"></div>
+                    <span id="connectionStatus">Conectado</span>
+                </div>
+                <button id="operationBtn" class="btn btn-primary">
+                    <svg class="icon-sm" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M8 5v14l11-7z"/>
+                    </svg>
+                    <span>Iniciar</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-grid">
+            <!-- Left Column: Robot 3D and Tanks -->
+            <div class="robot-section">
+                <!-- Robot 3D View -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Vista 3D del Robot</h2>
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                    </div>
+                    <div id="robotViewer" class="robot-viewer">
+                        <model-viewer
+                            id="robotModel"
+                            src="robot.glb"
+                            alt="Robot Fertilizador Aguaymanto"
+                            camera-controls
+                            touch-action="pan-y"
+                            auto-rotate
+                            auto-rotate-delay="3000"
+                            rotation-per-second="30deg"
+                            shadow-intensity="1"
+                            environment-image="neutral"
+                            exposure="1"
+                            camera-orbit="0deg 75deg 4m"
+                            camera-target="0m 0m 0m"
+                            min-camera-orbit="auto auto auto"
+                            max-camera-orbit="auto auto auto"
+                            style="--poster-color: #f8fafc;">
+                        </model-viewer>
+                        
+                        <div class="model-controls">
+                            <button id="resetViewBtn" class="model-btn">🔄 Reset</button>
+                            <button id="toggleAutoRotateBtn" class="model-btn">⏸️ Pausa</button>
+                            <button id="expandModalBtn" class="model-btn">📱 Expandir</button>
+                        </div>
+                        
+                        <div id="loadingIndicator" class="loading-indicator">
+                            <p>Cargando modelo 3D...</p>
+                            <div style="margin-top: 10px;">
+                                <div style="width: 50px; height: 4px; background: #e5e7eb; border-radius: 2px; overflow: hidden;">
+                                    <div style="width: 100%; height: 100%; background: #3b82f6; animation: loading 2s infinite;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="robot-info">
+                        <div class="robot-info-item">
+                            <span class="robot-info-label">Posición X:</span>
+                            <span class="robot-info-value" id="posX">2.3m</span>
+                        </div>
+                        <div class="robot-info-item">
+                            <span class="robot-info-label">Posición Y:</span>
+                            <span class="robot-info-value" id="posY">1.8m</span>
+                        </div>
+                        <div class="robot-info-item">
+                            <span class="robot-info-label">Estado:</span>
+                            <span class="robot-info-value" id="robotStatus" style="color: #6b7280;">En espera</span>
+                        </div>
+                        <div class="robot-info-item">
+                            <span class="robot-info-label">Cobertura:</span>
+                            <span class="robot-info-value" id="coverage" style="color: #3b82f6;">67%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fertilization System -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Sistema de Fertilización</h2>
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                        </svg>
+                    </div>
+                    <div class="tank-grid">
+                        <div class="tank-item">
+                            <div class="tank-visual">
+                                <div class="tank-fill tank-n" id="tankN" style="height: 85%"></div>
+                            </div>
+                            <div class="tank-info">
+                                <div class="tank-label">Nitrógeno (N)</div>
+                                <div class="tank-level" id="tankNLevel">85%</div>
+                            </div>
+                        </div>
+                        <div class="tank-item">
+                            <div class="tank-visual">
+                                <div class="tank-fill tank-p" id="tankP" style="height: 92%"></div>
+                            </div>
+                            <div class="tank-info">
+                                <div class="tank-label">Fósforo (P)</div>
+                                <div class="tank-level" id="tankPLevel">92%</div>
+                            </div>
+                        </div>
+                        <div class="tank-item">
+                            <div class="tank-visual">
+                                <div class="tank-fill tank-k" id="tankK" style="height: 78%"></div>
+                            </div>
+                            <div class="tank-info">
+                                <div class="tank-label">Potasio (K)</div>
+                                <div class="tank-level" id="tankKLevel">78%</div>
+                            </div>
+                        </div>
+                        <div class="tank-item">
+                            <div class="tank-visual">
+                                <div class="tank-fill tank-water" id="tankWater" style="height: 95%"></div>
+                            </div>
+                            <div class="tank-info">
+                                <div class="tank-label">Agua</div>
+                                <div class="tank-level" id="tankWaterLevel">95%</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #e5e7eb;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="color: #6b7280;">Tasa de aplicación:</span>
+                            <span style="font-weight: 700;" id="applicationRate">2.5 mL/min</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Weather and Recommendations -->
+                <div class="weather-info">
+                    <h3>🌤️ Condiciones Ambientales</h3>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>Clima:</span>
+                        <span id="weather">soleado</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-top: 8px;">
+                        <span>Viento:</span>
+                        <span>2.1 m/s NE</span>
+                    </div>
+                </div>
+
+                <div class="recommendation-panel">
+                    <h3>🧠 Recomendaciones IA</h3>
+                    <div id="recommendations">Analizando condiciones del cultivo...</div>
+                </div>
+            </div>
+
+            <!-- Right Column: Sensors -->
+            <div>
+                <div class="sensors-grid">
+                    <!-- NPK Sensors -->
+                    <div class="sensor-card">
+                        <div class="sensor-header">
+                            <div class="sensor-title">
+                                <svg class="icon-sm" style="color: #22c55e;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/>
+                                </svg>
+                                Nitrógeno (N)
+                            </div>
+                            <span class="sensor-value" id="nitrogenValue">45%</span>
+                        </div>
+                        <div class="sensor-progress">
+                            <div class="sensor-progress-bar progress-green" id="nitrogenBar" style="width: 45%"></div>
+                        </div>
+                    </div>
+
+                    <div class="sensor-card">
+                        <div class="sensor-header">
+                            <div class="sensor-title">
+                                <svg class="icon-sm" style="color: #ef4444;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/>
+                                </svg>
+                                Fósforo (P)
+                            </div>
+                            <span class="sensor-value" id="phosphorusValue">32%</span>
+                        </div>
+                        <div class="sensor-progress">
+                            <div class="sensor-progress-bar progress-red" id="phosphorusBar" style="width: 32%"></div>
+                        </div>
+                    </div>
+
+                    <div class="sensor-card">
+                        <div class="sensor-header">
+                            <div class="sensor-title">
+                                <svg class="icon-sm" style="color: #f59e0b;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/>
+                                </svg>
+                                Potasio (K)
+                            </div>
+                            <span class="sensor-value" id="potassiumValue">28%</span>
+                        </div>
+                        <div class="sensor-progress">
+                            <div class="sensor-progress-bar progress-yellow" id="potassiumBar" style="width: 28%"></div>
+                        </div>
+                    </div>
+
+                    <div class="sensor-card">
+                        <div class="sensor-header">
+                            <div class="sensor-title">
+                                <svg class="icon-sm" style="color: #8b5cf6;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                                </svg>
+                                pH del Suelo
+                            </div>
+                            <span class="sensor-value" id="phValue">6.8</span>
+                        </div>
+                        <div class="sensor-progress">
+                            <div class="sensor-progress-bar progress-purple" id="phBar" style="width: 48.5%"></div>
+                        </div>
+                    </div>
+
+                    <div class="sensor-card">
+                        <div class="sensor-header">
+                            <div class="sensor-title">
+                                <svg class="icon-sm" style="color: #3b82f6;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                                </svg>
+                                Humedad
+                            </div>
+                            <span class="sensor-value" id="humidityValue">65%</span>
+                        </div>
+                        <div class="sensor-progress">
+                            <div class="sensor-progress-bar progress-blue" id="humidityBar" style="width: 65%"></div>
+                        </div>
+                    </div>
+
+                    <div class="sensor-card">
+                        <div class="sensor-header">
+                            <div class="sensor-title">
+                                <svg class="icon-sm" style="color: #f97316;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0Z"/>
+                                </svg>
+                                Temperatura
+                            </div>
+                            <span class="sensor-value" id="temperatureValue">24°C</span>
+                        </div>
+                        <div class="sensor-progress">
+                            <div class="sensor-progress-bar progress-orange" id="temperatureBar" style="width: 48%"></div>
+                        </div>
+                    </div>
+
+                    <div class="sensor-card">
+                        <div class="sensor-header">
+                            <div class="sensor-title">
+                                <svg class="icon-sm" style="color: #22c55e;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect width="18" height="12" x="3" y="8" rx="1"/>
+                                    <path d="m3 8 1.88-1.88"/>
+                                    <path d="M7 8v4"/>
+                                    <path d="M13 8v4"/>
+                                    <path d="M17 8v4"/>
+                                </svg>
+                                Batería
+                            </div>
+                            <span class="sensor-value" id="batteryValue">87%</span>
+                        </div>
+                        <div class="sensor-progress">
+                            <div class="sensor-progress-bar progress-green" id="batteryBar" style="width: 87%"></div>
+                        </div>
+                    </div>
+
+                    <div class="sensor-card">
+                        <div class="sensor-header">
+                            <div class="sensor-title">
+                                <svg class="icon-sm" style="color: #6366f1;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
+                                    <circle cx="12" cy="10" r="3"/>
+                                </svg>
+                                Señal GPS
+                            </div>
+                            <span class="sensor-value">95%</span>
+                        </div>
+                        <div class="sensor-progress">
+                            <div class="sensor-progress-bar progress-indigo" style="width: 95%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Status Panel -->
+                <div class="status-panel">
+                    <div class="card-header">
+                        <h2 class="card-title">Estado del Sistema</h2>
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="3"/>
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1 1.51V6a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                        </svg>
+                    </div>
+                    <div class="status-grid">
+                        <div class="status-section">
+                            <h3>Algoritmo IA</h3>
+                            <div class="status-item">
+                                <span class="status-label">Procesamiento:</span>
+                                <span class="status-value">Activo</span>
+                            </div>
+                            <div class="status-item">
+                                <span class="status-label">Modelo entrenado:</span>
+                                <span class="status-value">Aguaymanto v2.1</span>
+                            </div>
+                            <div class="status-item">
+                                <span class="status-label">Confianza:</span>
+                                <span class="status-value">94%</span>
+                            </div>
+                        </div>
+                        <div class="status-section">
+                            <h3>Sistema de Navegación</h3>
+                            <div class="status-item">
+                                <span class="status-label">SLAM:</span>
+                                <span class="status-value">Mapeando</span>
+                            </div>
+                            <div class="status-item">
+                                <span class="status-label">Obstáculos:</span>
+                                <span class="status-value">0 detectados</span>
+                            </div>
+                            <div class="status-item">
+                                <span class="status-label">Precisión:</span>
+                                <span class="status-value">±2cm</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mission Control Panel -->
+        <div class="mission-control">
+            <h2>Centro de Misión</h2>
+            <div class="mission-status">
+                <div class="mission-stat">
+                    <div class="mission-stat-value" id="missionTime">00:15:32</div>
+                    <div class="mission-stat-label">Tiempo Activo</div>
+                </div>
+                <div class="mission-stat">
+                    <div class="mission-stat-value" id="plantsTreated">147</div>
+                    <div class="mission-stat-label">Plantas Tratadas</div>
+                </div>
+                <div class="mission-stat">
+                    <div class="mission-stat-value" id="fertilizerApp">2.8L</div>
+                    <div class="mission-stat-label">Fertilizante Aplicado</div>
+                </div>
+                <div class="mission-stat">
+                    <div class="mission-stat-value" id="efficiency">94%</div>
+                    <div class="mission-stat-label">Eficiencia</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls">
+            <h2>Controles del Sistema</h2>
+            <div class="controls-grid">
+                <button class="btn btn-primary" onclick="startMapping()">
+                    <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
+                        <circle cx="12" cy="10" r="3"/>
+                    </svg>
+                    Mapear Área
+                </button>
+                <button class="btn btn-success" onclick="calibrateSensors()">
+                    <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                    </svg>
+                    Calibrar Sensores
+                </button>
+                <button class="btn btn-warning" onclick="openConfiguration()">
+                    <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"/>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1 1.51V6a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                    </svg>
+                    Configuración
+                </button>
+                <button class="btn btn-secondary" onclick="downloadDataLog()">
+                    <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="7,10 12,15 17,10"/>
+                        <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                    Exportar Datos
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert Container -->
+    <div id="alertContainer"></div>
+
+    <!-- 3D Model Modal -->
+    <div id="modelModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Vista 3D - Robot Fertilizador Aguaymanto</h2>
+                <button id="closeModalBtn" class="modal-close">&times;</button>
+            </div>
+            <div class="modal-viewer">
+                <model-viewer
+                    id="modalRobotModel"
+                    src="robot.glb"
+                    alt="Robot Fertilizador Aguaymanto - Vista Expandida"
+                    camera-controls
+                    touch-action="pan-y"
+                    auto-rotate
+                    auto-rotate-delay="3000"
+                    rotation-per-second="30deg"
+                    shadow-intensity="1"
+                    environment-image="neutral"
+                    exposure="1"
+                    camera-orbit="0deg 75deg 4m"
+                    camera-target="0m 0m 0m"
+                    min-camera-orbit="auto auto auto"
+                    max-camera-orbit="auto auto auto"
+                    style="--poster-color: #f8fafc; width: 100%; height: 100%;">
+                </model-viewer>
+                
+                <div class="modal-controls">
+                    <button id="modalResetViewBtn" class="modal-btn">🔄 Resetear Vista</button>
+                    <button id="modalToggleAutoRotateBtn" class="modal-btn">⏸️ Pausar Rotación</button>
+                    <button id="fullscreenBtn" class="modal-btn">🔳 Pantalla Completa</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let isOperating = false;
+        let modelViewer;
+        let modalModelViewer;
+        let autoRotateEnabled = true;
+        let modalAutoRotateEnabled = true;
+        let missionStartTime = Date.now();
+        let plantsTreated = 147;
+        let fertilizerApplied = 2800; // in mL
+        
+        // Sensor data
+        let sensorData = {
+            nitrogen: 45,
+            phosphorus: 32,
+            potassium: 28,
+            ph: 6.8,
+            humidity: 65,
+            temperature: 24,
+            battery: 87,
+            position: { x: 2.3, y: 1.8 }
+        };
+
+        // Fertilization data
+        let fertilizationData = {
+            tankN: 85,
+            tankP: 92,
+            tankK: 78,
+            tankWater: 95,
+            applicationRate: 2.5,
+            coverage: 67
+        };
+
+        // Data logging
+        let dataLog = [];
+
+        // Initialize Model Viewer
+        function initializeModelViewer() {
+            modelViewer = document.getElementById('robotModel');
+            modalModelViewer = document.getElementById('modalRobotModel');
+            
+            // Event listeners for main model-viewer
+            modelViewer.addEventListener('load', () => {
+                hideLoadingIndicator();
+                showAlert('Modelo 3D cargado exitosamente', 'success');
+            });
+            
+            modelViewer.addEventListener('error', (event) => {
+                hideLoadingIndicator();
+                showAlert('Error cargando modelo 3D. Verifica que robot.glb esté en el directorio correcto.', 'warning');
+            });
+            
+            modelViewer.addEventListener('progress', (event) => {
+                const progress = event.detail.totalProgress;
+                if (progress < 1) {
+                    showLoadingIndicator();
+                }
+            });
+
+            // Event listeners for modal model-viewer
+            modalModelViewer.addEventListener('load', () => {
+                console.log('Modal model loaded successfully');
+            });
+            
+            modalModelViewer.addEventListener('error', (event) => {
+                showAlert('Error cargando modelo en vista expandida', 'warning');
+            });
+        }
+
+        // Modal functions
+        function openModal() {
+            const modal = document.getElementById('modelModal');
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('modelModal');
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Modal model controls
+        function resetModalView() {
+            if (modalModelViewer) {
+                modalModelViewer.cameraOrbit = "0deg 75deg 4m";
+                modalModelViewer.cameraTarget = "0m 0m 0m";
+            }
+        }
+
+        function toggleModalAutoRotate() {
+            const btn = document.getElementById('modalToggleAutoRotateBtn');
+            if (modalAutoRotateEnabled) {
+                modalModelViewer.removeAttribute('auto-rotate');
+                btn.textContent = '▶️ Iniciar Rotación';
+                modalAutoRotateEnabled = false;
+            } else {
+                modalModelViewer.setAttribute('auto-rotate', '');
+                btn.textContent = '⏸️ Pausar Rotación';
+                modalAutoRotateEnabled = true;
+            }
+        }
+
+        function toggleFullscreen() {
+            const modalContent = document.querySelector('.modal-content');
+            if (!document.fullscreenElement) {
+                modalContent.requestFullscreen().catch(err => {
+                    showAlert('Error al activar pantalla completa', 'warning');
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        // Model viewer controls
+        function resetView() {
+            if (modelViewer) {
+                modelViewer.cameraOrbit = "0deg 75deg 4m";
+                modelViewer.cameraTarget = "0m 0m 0m";
+            }
+        }
+
+        function toggleAutoRotate() {
+            const btn = document.getElementById('toggleAutoRotateBtn');
+            if (autoRotateEnabled) {
+                modelViewer.removeAttribute('auto-rotate');
+                btn.innerHTML = '▶️ Rotar';
+                autoRotateEnabled = false;
+            } else {
+                modelViewer.setAttribute('auto-rotate', '');
+                btn.innerHTML = '⏸️ Pausa';
+                autoRotateEnabled = true;
+            }
+        }
+
+        // Control auto-rotation based on operation state
+        function updateModelRotation() {
+            if (modelViewer) {
+                if (isOperating && !autoRotateEnabled) {
+                    modelViewer.setAttribute('auto-rotate', '');
+                    modelViewer.setAttribute('auto-rotate-delay', '0');
+                } else if (!isOperating && autoRotateEnabled) {
+                    modelViewer.setAttribute('auto-rotate-delay', '3000');
+                }
+            }
+        }
+
+        // Loading indicator functions
+        function showLoadingIndicator() {
+            const indicator = document.getElementById('loadingIndicator');
+            indicator.style.display = 'block';
+        }
+
+        function hideLoadingIndicator() {
+            const indicator = document.getElementById('loadingIndicator');
+            indicator.style.display = 'none';
+        }
+
+        // Update sensor displays
+        function updateSensorDisplays() {
+            document.getElementById('nitrogenValue').textContent = Math.round(sensorData.nitrogen) + '%';
+            document.getElementById('nitrogenBar').style.width = sensorData.nitrogen + '%';
+            
+            document.getElementById('phosphorusValue').textContent = Math.round(sensorData.phosphorus) + '%';
+            document.getElementById('phosphorusBar').style.width = sensorData.phosphorus + '%';
+            
+            document.getElementById('potassiumValue').textContent = Math.round(sensorData.potassium) + '%';
+            document.getElementById('potassiumBar').style.width = sensorData.potassium + '%';
+            
+            document.getElementById('phValue').textContent = sensorData.ph.toFixed(1);
+            document.getElementById('phBar').style.width = ((sensorData.ph - 5.5) / 2.5 * 100) + '%';
+            
+            document.getElementById('humidityValue').textContent = Math.round(sensorData.humidity) + '%';
+            document.getElementById('humidityBar').style.width = sensorData.humidity + '%';
+            
+            document.getElementById('temperatureValue').textContent = sensorData.temperature.toFixed(1) + '°C';
+            document.getElementById('temperatureBar').style.width = ((sensorData.temperature - 15) / 20 * 100) + '%';
+            
+            document.getElementById('batteryValue').textContent = Math.round(sensorData.battery) + '%';
+            document.getElementById('batteryBar').style.width = sensorData.battery + '%';
+            
+            // Update battery color based on level
+            const batteryBar = document.getElementById('batteryBar');
+            if (sensorData.battery > 20) {
+                batteryBar.className = 'sensor-progress-bar progress-green';
+            } else {
+                batteryBar.className = 'sensor-progress-bar progress-red';
+            }
+
+            // Update robot position
+            document.getElementById('posX').textContent = sensorData.position.x.toFixed(1) + 'm';
+            document.getElementById('posY').textContent = sensorData.position.y.toFixed(1) + 'm';
+            
+            document.getElementById('coverage').textContent = Math.round(fertilizationData.coverage) + '%';
+        }
+
+        // Update tank displays
+        function updateTankDisplays() {
+            document.getElementById('tankN').style.height = fertilizationData.tankN + '%';
+            document.getElementById('tankNLevel').textContent = Math.round(fertilizationData.tankN) + '%';
+            
+            document.getElementById('tankP').style.height = fertilizationData.tankP + '%';
+            document.getElementById('tankPLevel').textContent = Math.round(fertilizationData.tankP) + '%';
+            
+            document.getElementById('tankK').style.height = fertilizationData.tankK + '%';
+            document.getElementById('tankKLevel').textContent = Math.round(fertilizationData.tankK) + '%';
+            
+            document.getElementById('tankWater').style.height = fertilizationData.tankWater + '%';
+            document.getElementById('tankWaterLevel').textContent = Math.round(fertilizationData.tankWater) + '%';
+            
+            document.getElementById('applicationRate').textContent = fertilizationData.applicationRate.toFixed(1) + ' mL/min';
+        }
+
+        // Update mission statistics
+        function updateMissionStats() {
+            const currentTime = Date.now();
+            const elapsed = currentTime - missionStartTime;
+            const hours = Math.floor(elapsed / 3600000);
+            const minutes = Math.floor((elapsed % 3600000) / 60000);
+            const seconds = Math.floor((elapsed % 60000) / 1000);
+            
+            document.getElementById('missionTime').textContent = 
+                `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            if (isOperating) {
+                plantsTreated += Math.floor(Math.random() * 3);
+                fertilizerApplied += fertilizationData.applicationRate / 60 / 30;
+            }
+            
+            document.getElementById('plantsTreated').textContent = plantsTreated;
+            document.getElementById('fertilizerApp').textContent = (fertilizerApplied / 1000).toFixed(1) + 'L';
+            document.getElementById('efficiency').textContent = Math.min(100, Math.round(85 + Math.random() * 10)) + '%';
+        }
+
+        // Simulate real-time data updates
+        function updateSensorData() {
+            sensorData.nitrogen = Math.max(0, Math.min(100, sensorData.nitrogen + (Math.random() - 0.5) * 5));
+            sensorData.phosphorus = Math.max(0, Math.min(100, sensorData.phosphorus + (Math.random() - 0.5) * 3));
+            sensorData.potassium = Math.max(0, Math.min(100, sensorData.potassium + (Math.random() - 0.5) * 4));
+            sensorData.ph = Math.max(5.5, Math.min(8.0, sensorData.ph + (Math.random() - 0.5) * 0.2));
+            sensorData.humidity = Math.max(0, Math.min(100, sensorData.humidity + (Math.random() - 0.5) * 8));
+            sensorData.temperature = Math.max(15, Math.min(35, sensorData.temperature + (Math.random() - 0.5) * 2));
+            sensorData.battery = Math.max(0, Math.min(100, sensorData.battery - (isOperating ? 0.1 : 0.02)));
+
+            if (isOperating) {
+                fertilizationData.tankN = Math.max(0, fertilizationData.tankN - 0.2);
+                fertilizationData.tankP = Math.max(0, fertilizationData.tankP - 0.15);
+                fertilizationData.tankK = Math.max(0, fertilizationData.tankK - 0.18);
+                fertilizationData.tankWater = Math.max(0, fertilizationData.tankWater - 0.25);
+                fertilizationData.coverage = Math.min(100, fertilizationData.coverage + 0.5);
+                
+                // Update position simulation
+                sensorData.position.x += (Math.random() - 0.5) * 0.1;
+                sensorData.position.y += (Math.random() - 0.5) * 0.1;
+            }
+
+            updateSensorDisplays();
+            updateTankDisplays();
+            updateMissionStats();
+        }
+
+        // Toggle operation
+        function toggleOperation() {
+            isOperating = !isOperating;
+            const btn = document.getElementById('operationBtn');
+            const statusElement = document.getElementById('robotStatus');
+            
+            if (isOperating) {
+                btn.innerHTML = `
+                    <svg class="icon-sm" viewBox="0 0 24 24" fill="currentColor">
+                        <rect width="4" height="16" x="6" y="4"/>
+                        <rect width="4" height="16" x="14" y="4"/>
+                    </svg>
+                    <span>Detener</span>
+                `;
+                btn.className = 'btn btn-danger';
+                statusElement.textContent = 'Operando';
+                statusElement.style.color = '#22c55e';
+                showAlert('Operación iniciada', 'success');
+            } else {
+                btn.innerHTML = `
+                    <svg class="icon-sm" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M8 5v14l11-7z"/>
+                    </svg>
+                    <span>Iniciar</span>
+                `;
+                btn.className = 'btn btn-primary';
+                statusElement.textContent = 'En espera';
+                statusElement.style.color = '#6b7280';
+                showAlert('Operación detenida', 'warning');
+            }
+            
+            // Update model rotation
+            updateModelRotation();
+        }
+
+        // Alert system
+        function showAlert(message, type = 'info') {
+            const alertContainer = document.getElementById('alertContainer');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.innerHTML = `
+                <div class="alert-content">
+                    <span class="alert-message">${message}</span>
+                    <button class="alert-close" onclick="this.parentElement.parentElement.remove()">×</button>
+                </div>
+            `;
+            alertContainer.appendChild(alert);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (alert.parentElement) {
+                    alert.remove();
+                }
+            }, 5000);
+        }
+
+        // Performance monitoring
+        function checkSystemHealth() {
+            if (sensorData.battery < 20) {
+                showAlert('Batería baja. Regresando a estación de carga.', 'warning');
+            }
+            
+            if (fertilizationData.tankN < 10 || fertilizationData.tankP < 10 || 
+                fertilizationData.tankK < 10 || fertilizationData.tankWater < 10) {
+                showAlert('Niveles de tanques bajos. Reabastecimiento necesario.', 'warning');
+            }
+            
+            if (sensorData.ph < 6.0 || sensorData.ph > 7.5) {
+                showAlert(`pH del suelo fuera del rango óptimo: ${sensorData.ph.toFixed(1)}`, 'info');
+            }
+        }
+
+        // Connection simulation
+        function simulateConnection() {
+            const isConnected = Math.random() > 0.1; // 90% uptime
+            const statusBadge = document.querySelector('.status-badge');
+            const statusText = document.getElementById('connectionStatus');
+            const statusDot = document.querySelector('.status-dot');
+            
+            if (isConnected) {
+                statusBadge.className = 'status-badge status-connected';
+                statusText.textContent = 'Conectado';
+                statusDot.style.background = '#22c55e';
+            } else {
+                statusBadge.className = 'status-badge';
+                statusBadge.style.background = '#fee2e2';
+                statusBadge.style.color = '#dc2626';
+                statusText.textContent = 'Desconectado';
+                statusDot.style.background = '#ef4444';
+                
+                if (isOperating) {
+                    toggleOperation();
+                    showAlert('Conexión perdida. Operación detenida.', 'warning');
+                }
+            }
+        }
+
+        // Data logging system
+        function logData() {
+            const timestamp = new Date().toISOString();
+            const logEntry = {
+                timestamp,
+                sensors: {...sensorData},
+                tanks: {...fertilizationData},
+                operating: isOperating
+            };
+            
+            dataLog.push(logEntry);
+            
+            // Keep only last 100 entries
+            if (dataLog.length > 100) {
+                dataLog = dataLog.slice(-100);
+            }
+        }
+
+        function downloadDataLog() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dataLog, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `robot_data_${new Date().toISOString().split('T')[0]}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+            showAlert('Datos exportados correctamente', 'success');
+        }
+
+        // Advanced controls
+        function calibrateSensors() {
+            showAlert('Iniciando calibración de sensores...', 'info');
+            setTimeout(() => {
+                showAlert('Calibración completada exitosamente.', 'success');
+            }, 3000);
+        }
+
+        function startMapping() {
+            showAlert('Iniciando mapeo del área experimental...', 'info');
+            let progress = 0;
+            const mappingInterval = setInterval(() => {
+                progress += 10;
+                showAlert(`Progreso de mapeo: ${progress}%`, 'info');
+                
+                if (progress >= 100) {
+                    clearInterval(mappingInterval);
+                    showAlert('Mapeo completado. Área de 2.5m² registrada.', 'success');
+                }
+            }, 1000);
+        }
+
+        function openConfiguration() {
+            showAlert('Panel de configuración disponible en próxima actualización.', 'info');
+        }
+
+        // Weather and recommendations simulation
+        function simulateWeather() {
+            const weatherConditions = ['soleado', 'nublado', 'lluvia ligera', 'viento'];
+            const currentWeather = weatherConditions[Math.floor(Math.random() * weatherConditions.length)];
+            
+            const weatherElement = document.getElementById('weather');
+            if (weatherElement) {
+                weatherElement.textContent = currentWeather;
+                
+                // Adjust operations based on weather
+                if (currentWeather === 'lluvia ligera' && isOperating) {
+                    showAlert('Lluvia detectada. Pausando operaciones.', 'warning');
+                    toggleOperation();
+                }
+            }
+        }
+
+        // Fertilization recommendations
+        function calculateFertilizerRecommendation() {
+            const recommendations = {
+                nitrogen: 'normal',
+                phosphorus: 'normal',
+                potassium: 'normal'
+            };
+            
+            // Simple rule-based recommendations
+            if (sensorData.nitrogen < 35) recommendations.nitrogen = 'increase';
+            if (sensorData.nitrogen > 55) recommendations.nitrogen = 'decrease';
+            
+            if (sensorData.phosphorus < 25) recommendations.phosphorus = 'increase';
+            if (sensorData.phosphorus > 45) recommendations.phosphorus = 'decrease';
+            
+            if (sensorData.potassium < 30) recommendations.potassium = 'increase';
+            if (sensorData.potassium > 50) recommendations.potassium = 'decrease';
+            
+            return recommendations;
+        }
+
+        function updateRecommendations() {
+            const recommendations = calculateFertilizerRecommendation();
+            let message = 'Condiciones óptimas para fertilización';
+            let hasRecommendations = false;
+            
+            if (recommendations.nitrogen !== 'normal') {
+                message = `Ajustar Nitrógeno: ${recommendations.nitrogen === 'increase' ? 'Incrementar' : 'Reducir'}`;
+                hasRecommendations = true;
+            }
+            if (recommendations.phosphorus !== 'normal') {
+                message += hasRecommendations ? ', ' : '';
+                message += `Fósforo: ${recommendations.phosphorus === 'increase' ? 'Incrementar' : 'Reducir'}`;
+                hasRecommendations = true;
+            }
+            if (recommendations.potassium !== 'normal') {
+                message += hasRecommendations ? ', ' : '';
+                message += `Potasio: ${recommendations.potassium === 'increase' ? 'Incrementar' : 'Reducir'}`;
+                hasRecommendations = true;
+            }
+            
+            const recommendationElement = document.getElementById('recommendations');
+            if (recommendationElement) {
+                recommendationElement.textContent = message;
+                recommendationElement.style.color = hasRecommendations ? '#fbbf24' : '#ffffff';
+            }
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Model Viewer
+            initializeModelViewer();
+            
+            // Start data updates
+            setInterval(updateSensorData, 2000);
+            setInterval(logData, 5000);
+            setInterval(checkSystemHealth, 10000);
+            setInterval(simulateConnection, 15000);
+            setInterval(updateRecommendations, 8000);
+            setInterval(simulateWeather, 20000);
+            
+            // Button event listeners
+            document.getElementById('operationBtn').addEventListener('click', toggleOperation);
+            document.getElementById('resetViewBtn').addEventListener('click', resetView);
+            document.getElementById('toggleAutoRotateBtn').addEventListener('click', toggleAutoRotate);
+            document.getElementById('expandModalBtn').addEventListener('click', openModal);
+            
+            // Modal event listeners
+            document.getElementById('closeModalBtn').addEventListener('click', closeModal);
+            document.getElementById('modalResetViewBtn').addEventListener('click', resetModalView);
+            document.getElementById('modalToggleAutoRotateBtn').addEventListener('click', toggleModalAutoRotate);
+            document.getElementById('fullscreenBtn').addEventListener('click', toggleFullscreen);
+            
+            // Close modal when clicking outside
+            document.getElementById('modelModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeModal();
+                }
+            });
+
+            // Close modal with Escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && document.getElementById('modelModal').style.display === 'flex') {
+                    closeModal();
+                }
+            });
+            
+            // Initial display update
+            updateSensorDisplays();
+            updateTankDisplays();
+            updateMissionStats();
+            
+            // Show welcome message
+            setTimeout(() => {
+                showAlert('Dashboard del robot fertilizador iniciado correctamente', 'success');
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
